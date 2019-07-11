@@ -1,0 +1,7 @@
+#include <iostream>
+
+// ' " \ 등을 출력하기 위해선 \ 앞에붙여서 이스케이프 시켜줌
+int main() {
+	std::cout << "|\\_/|" << std::endl<<"|q p|   /}"<<std::endl<<"( 0 )\"\"\"\\"<<std::endl<<"|\"^\"`    |"<<std::endl<<"||_/=\\\\__|";
+	return 0;
+}
