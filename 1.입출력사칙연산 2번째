@@ -1,5 +1,6 @@
 #include <iostream>
 
+// endl 이용해서 한 줄의 표준입출력으로 두 줄을 print
 int main() {
 	std::cout << "강한친구 대한육군" << std::endl<<"강한친구 대한육군";
 	return 0;
