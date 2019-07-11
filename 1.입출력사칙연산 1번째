@@ -1,6 +1,8 @@
 #include <iostream>
 
+
+// c++ 언어의 표준 입출력 라이브러리 std 사용
 int main() {
-	std::cout << "Hello World!" << std::endl;
+	std::cout << "Hello World!" << std::endl; 
 	return 0;
 }
