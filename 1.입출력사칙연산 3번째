@@ -1,0 +1,6 @@
+#include <iostream>
+// ' 나 " \ 등을 출력할 때는 \ 를 앞에 하나 추가해줘 이스케이프 시켜줘야 함
+int main() {
+	std::cout << "\\    /\\" << std::endl<<" )  ( ')"<<std::endl<<"(  /  )"<<std::endl<<" \\(__)|";
+	return 0;
+}
