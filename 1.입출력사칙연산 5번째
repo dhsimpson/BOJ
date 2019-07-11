@@ -1,0 +1,8 @@
+#include<iostream>
+// cin >>a>>b 하면 두 개의 입력을 한꺼번에 받을 수 있다.
+int main() {
+	int a,b;
+	std::cin >> a>>b;
+	std::cout << a+b;
+	return 0;
+}
