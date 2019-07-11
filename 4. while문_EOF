@@ -1,0 +1,15 @@
+#include<iostream>
+using namespace std;
+// End_Of_File 이다. 표준입력을 받을 시, 입력을 받지 않았으면 (ctrl+z) cin.eof() 는 True를 반환하게 된다. 
+int main() {
+	int a, b;
+	while (cin >> a >> b) {
+		if (!cin.eof()) {
+			cout << a + b << "\n";
+		}
+		else {
+			break;
+		}
+	}
+	return 0;
+}
