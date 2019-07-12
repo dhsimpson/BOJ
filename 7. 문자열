@@ -1,0 +1,26 @@
+#include<iostream>
+#include<string>
+using namespace std;
+// string의 각 문자를 char로 받는다.
+int main() {
+	cin.tie(NULL);
+	ios_base::sync_with_stdio(false);
+	// a 의 아스키코드는 97
+	string s;
+	int sLength = s.length();
+	int alpIdx[26];
+	string strTemp;
+	char cTemp;
+	int intTemp;
+	for (int i = 0; i < 26; i++)alpIdx[i] = -1;
+	cin >> s;
+	for (int i = 0; i < s.length(); i++) {
+		cTemp = s.at(i);
+		intTemp = cTemp - 97;
+		if (alpIdx[intTemp] == -1) alpIdx[intTemp] = i;
+	}
+
+	for (int i = 0; i < 26; i++) cout << alpIdx[i] << " ";
+
+	return 0;
+}
