@@ -1,0 +1,56 @@
+#include<iostream>
+#include<math.h>
+#include<string>
+using namespace std;
+
+// 수학적 규칙성을 찾아보자,
+// 1광년 부터 시작해서
+// 1 2 | 3 3 4 4 | 5 5 5 6 6 6 | 7 7 7 7 8 8 8 8 | ........ | k k k k ..... k k k k k+1 k+1 k+1 k+1 ..... k+1 k+1 k+1 k+1 | (단위 : 횟수)
+// 위의 규칙을 갖는다.
+// 백준에서 런타임 에러가 나 문제는 틀렸지만 규칙성 자체는 맞을 것이다....(맞겠지? 성공할 때까지 다시 해봐야겠다.)
+int main() {
+	cin.tie(NULL);
+	ios_base::sync_with_stdio(false);
+	int T, x, y;
+	int travel[1001];
+	int count = 0;
+	int term = 1;
+	int endPoint = 0;
+	cin >> T;
+
+	for (int j = 0; j < 1001; j++) {
+		travel[j] = 0;
+	}
+	for (int j = 0; j < T; j++) {
+		cin >> x >> y;
+		if (travel[y - x] != 0) {
+			cout << travel[y - x] << "\n";
+		}
+		else {
+			while (1) {
+				if (travel[y - x] != 0){
+					cout << travel[y - x]<<"\n";
+					break;
+				}
+				else {
+					for (int i = endPoint + 1; i <= endPoint + term; i++) {
+						travel[i] = count + 1;
+					}
+					for (int i = endPoint + 1 + term; i <= endPoint + term * 2; i++) {
+						travel[i] = count + 2;
+					}
+					endPoint += term * 2;
+					term += 1;
+					count += 2;
+				}
+					
+			}
+			
+		}
+	}
+	cout << "\n";
+	for (int j = 0; j < 22; j++) {
+		cout << travel[j] << "\n";
+	}
+	return 0;
+}
