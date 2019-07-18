@@ -12,36 +12,50 @@ int main() {
 	cin.tie(NULL);
 	ios_base::sync_with_stdio(false);
 	int T, x, y;
-	int travel[1001];
+	int max = 1001;
+	int* travel = new int[max + 1]();
+	int* check = new int[max + 1]();
 	int count = 0;
 	int term = 1;
 	int endPoint = 0;
 	cin >> T;
 
-	for (int j = 0; j < 1001; j++) {
-		travel[j] = 0;
-	}
+	
 	for (int j = 0; j < T; j++) {
 		cin >> x >> y;
-		if (travel[y - x] != 0) {
+		if (check[y-x] == 1) {
 			cout << travel[y - x] << "\n";
 		}
 		else {
 			while (1) {
-				if (travel[y - x] != 0){
+				if (check[y - x] == 1){
 					cout << travel[y - x]<<"\n";
 					break;
 				}
 				else {
+					if (endPoint + term * 2 > max) {
+						int* temp = new int[max * 2 + 1]();
+						int* ctemp = new int[max * 2 + 1]();
+						copy(travel, travel + max, temp);
+						travel = temp;
+						copy(check, check + max, ctemp);
+						check = ctemp;
+						cout << travel[4] << "재할당 ! \n";
+						cout << travel[1004] << "\n";
+						max *= 2;
+					}
 					for (int i = endPoint + 1; i <= endPoint + term; i++) {
 						travel[i] = count + 1;
+						check[i] = 1;
 					}
 					for (int i = endPoint + 1 + term; i <= endPoint + term * 2; i++) {
 						travel[i] = count + 2;
+						check[i] = 1;
 					}
 					endPoint += term * 2;
 					term += 1;
 					count += 2;
+					
 				}
 					
 			}
