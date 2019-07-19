@@ -1,0 +1,57 @@
+#include<iostream>
+#include<math.h>
+#include<string>
+using namespace std;
+
+//year:1 2 3 4 5 6 ...........................................................Max
+// M : 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 1 2 3 4 5 
+// N : 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 1 2 3 
+// 위 처럼 나열해 놓고 푸는 문제이다. year == x+M*a == y+N*b 일 때의 year 값이 정답이며, year의 Max 값은 최소공배수이다.
+// 온라인 저지 사이트 제출 시 틀렸다고 나왔으니 내가 틀린거겠지.... 어디가 틀린건지, 논리적 오류가 있는 것인지 다시 보자.
+int main() {
+	cin.tie(NULL);
+	ios_base::sync_with_stdio(false);
+	int T;
+
+	cin >> T;
+	for (int i = 0; i < T; i++) {
+		double M, N, x, y;
+		int a=1;
+		int year = 0;
+		double b;
+
+		cin >> M >> N >> x >> y;
+		double temp;
+		
+		int p = M;
+		int q = N;
+		int c;
+		int maxYear = 0;
+
+		while (q != 0) {
+			c = p % q;
+			p = q;
+			q = c;
+		}
+		maxYear = (M * N) / p;
+
+		while (1) {
+			//b = (M / N) * a + (x - y) / N;
+			b = (M  * a + x - y) / N;
+			//cout << M * a + x << " b : " << b << "\n";
+			year = M * a + x;
+			int(temp) = b;
+			if ( temp==b ) {
+				break;
+			}
+			a++;
+			if (maxYear < year) {
+				year = -1;
+				break;
+			}
+		}
+		cout << year << "\n";
+	}
+	
+	return 0;
+}
