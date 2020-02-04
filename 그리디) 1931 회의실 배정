@@ -1,0 +1,43 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<algorithm>
+using namespace std;
+
+class node {
+public: 
+	int start = 0;
+	int end = 0;
+};
+bool compare(node a, node b) {
+	if (a.end == b.end) {
+		return a.start < b.start;
+	}
+	return a.end < b.end; // 회의가 빨리 끝나는 순
+}
+int main() {
+	int N;
+	int count = 0;
+	int end = 0;
+	cin >> N;
+	vector<node> conf;
+	for (int i = 0; i < N; i++) {
+		int start, end;
+		node temp;
+		cin >> start >> end;
+		temp.start = start;
+		temp.end = end;
+		conf.push_back(temp);
+	}
+	sort(conf.begin(), conf.end(), compare);
+	for (int i = 0; i < N; i++) {
+		if (conf[i].start < end) continue;
+		else {
+			count++;
+			end = conf[i].end;
+		}
+	}
+	cout << count;
+
+	return 0;
+}
