@@ -1,0 +1,23 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+
+int main() {
+	int N;
+	cin >> N;
+	int* p = new int[N];
+
+	int Time = 0;
+	int sum = 0;
+
+	for (int i = 0; i < N; i++) {
+		cin >> p[i];
+	}
+	sort(p, p + N); // use sort in header 'algorithm'
+	for (int i = 0; i < N; i++) {
+		Time += p[i];
+		sum += Time;
+	}
+	cout << sum;
+	return 0;
+}
