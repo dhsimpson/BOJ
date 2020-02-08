@@ -1,0 +1,68 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<algorithm>
+#include<queue>
+#include<limits>
+using namespace std;
+
+int BFS(int** box,int N,int M) {
+	// 0. 어떤 토마토(익은 상태 0)의 군집 상하좌우가 -1이면 전체가 익을 수 없으므로 -1을 리턴 -> 가 아니라 1에서 큐에 더이상 저장할 게 없으면 전체가 다 익을 수 없는 것
+	// 1. 익은 토마토인지 확인하는 부분 -> 익었으면 좌표 pair<int,int> 를 큐에 저장
+	// 2. 큐에서 하나씩 빼가면서 토마토를 익게 만들기
+	// 3. 토마토가 다 익었는지 확인(-1인 부분 제외, 즉 0이 없다면), 다 익었다면 날짜를 리턴
+	queue<pair<int, int>> q;
+	int day = 0;
+	int r[4] = { -1,0,1,0 };
+	int c[4] = { 0,1,0,-1 };
+	bool isFull = true;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			if (box[i][j] == 0) isFull = false;
+			if (0 <= i && i < N && 0 <= j && j < M && box[i][j] == 1) {// 단, i,j 의 상하좌우 중에 0이 있을 때만 
+				q.push({ i,j });
+			}
+		}
+	}
+	if (isFull) return 0;
+loop:
+	while (!q.empty()) {
+		// 1 day 마다 다 익은 토마토 좌표들을 담은 큐(q)를 조사해 새로운 익은 토마토들의 위치를 temp에 담고, q에게 넘겨 줌
+		queue<pair<int, int>> temp;
+		while (!q.empty()) {
+			int ri = q.front().first;
+			int cj = q.front().second;
+			q.pop();
+			for (int k = 0; k < 4; k++) {
+				if (0 <= ri + r[k] && ri + r[k] < N && 0 <= cj + c[k] && cj + c[k] < M && box[ri + r[k]][cj + c[k]] == 0) {
+					box[ri + r[k]][cj + c[k]] = 1;
+					temp.push({ ri + r[k],cj + c[k] });
+				}
+			}
+		}
+		day++;
+		q = temp;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				if (box[i][j] == 0) goto loop;
+			}
+		}
+		return day;
+	}
+	return -1;
+}
+int main() {
+	int N, M;
+	cin >> M >> N;
+	int** box = new int* [N];
+	for (int i = 0; i < N; i++) {
+		box[i] = new int[M];
+	}
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> box[i][j];
+		}
+	}
+	cout << BFS(box, N, M);
+	return 0;
+}
