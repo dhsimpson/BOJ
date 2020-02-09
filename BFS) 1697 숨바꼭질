@@ -1,0 +1,43 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<algorithm>
+#include<queue>
+#include<limits>
+using namespace std;
+void BFS(int N,int M) {
+	int chase[100001] = { 0 };
+	queue<int> q;
+	q.push(N);
+	int temp;
+	while (!q.empty()) {
+		temp = q.front();
+		q.pop();
+		if (temp - 1 >= 0) {
+			if (chase[temp - 1] == 0 || chase[temp] + 1 < chase[temp - 1]) {
+				q.push(temp - 1); chase[temp - 1] = chase[temp] + 1;
+			}
+		}
+		if (temp + 1 <= 100000) {
+			if (chase[temp + 1] == 0 || chase[temp] + 1 < chase[temp + 1]) {
+				q.push(temp + 1); chase[temp + 1] = chase[temp] + 1;
+			}
+		}
+		if (temp * 2 <= 100000) {
+			if (chase[temp * 2] == 0 || chase[temp] + 1 < chase[temp * 2]) {
+				q.push(temp * 2); chase[temp * 2] = chase[temp] + 1;
+			}
+		}
+	}
+	cout << chase[M];
+}
+int main() {
+	int N, M;
+	cin >> N >> M;
+	if (N == M) {
+		cout << 0;
+		return 0;
+	}
+	BFS(N, M);
+	return 0;
+}
