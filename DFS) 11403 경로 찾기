@@ -1,0 +1,42 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<algorithm>
+#include<queue>
+#include<limits>
+using namespace std;
+
+vector<int> graph[100];
+bool visited[100][100];
+
+void DFS(int s,int j) {
+	visited[s][j] = true;
+	for (int i = 0; i < graph[j].size(); i++) {
+		if (s != graph[j][i] && !visited[s][graph[j][i]]) DFS(s, graph[j][i]);
+		else visited[s][graph[j][i]] = true;
+	}
+}
+int main() {
+	int N, temp;
+	cin >> N;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> temp;
+			if (temp == 1) {
+				graph[i].push_back(j);
+			} 
+		}
+	}
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < graph[i].size(); j++) {
+			if(visited[i][graph[i][j]]==false)	DFS(i, graph[i][j]);
+		}
+	}
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cout << visited[i][j] << " ";
+		}
+		cout << "\n";
+	}
+	return 0;
+}
