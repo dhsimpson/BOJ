@@ -1,0 +1,28 @@
+#include<iostream>
+
+using namespace std;
+void Print(int lotto[6]) {
+	for (int i = 0; i < 6; i++) cout << lotto[i] << " ";
+	cout << "\n";
+}
+void DFS(int* numbers,int lotto[6], int N,int s,int depth) {
+	for (int i = s; i < N; i++) {
+		if (depth == 0 && s > N - 5) return;
+		lotto[depth] = numbers[i];
+		if (depth == 5) Print(lotto);
+		else DFS(numbers, lotto, N, i+1, depth + 1);
+	}
+}
+int main() {
+	while (true) {
+		int N;
+		cin >> N;
+		if (N == 0) return 0;
+		int* numbers = new int[N];
+		for (int i = 0; i < N; i++) cin >> numbers[i];
+		int lotto[6];
+		DFS(numbers, lotto, N, 0, 0);
+		cout << "\n";
+;	}
+	return 0;
+}
