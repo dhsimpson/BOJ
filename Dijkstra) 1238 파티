@@ -1,0 +1,66 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#define INF 987654321
+
+using namespace std;
+vector<int> dijkstra(vector<pair<int,int>>* graph, int size,int end) { //end부터 dijkstra 수행해 end(파티하는 마을)로 부터 모든 마을까지의 최단거리를 구한 뒤 각 마을부터 end까지의 최단거리를 각각 구해낸다.
+	vector<int> path(size + 1, INF);
+	path[end] = 0;
+	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+	pq.push({ 0,end });
+	while (!pq.empty()) {
+		int vertex = pq.top().second;
+		pq.pop();
+		for (int i = 0; i < graph[vertex].size(); i++) {
+			int cost = graph[vertex][i].first;
+			int neighbor = graph[vertex][i].second;
+			if (cost + path[vertex] < path[neighbor]) {
+				path[neighbor] = cost + path[vertex];
+				pq.push({ path[neighbor] ,neighbor });
+			}
+		}
+	}
+	return path;
+}
+int semi_dijkstra(vector<pair<int, int>>* graph, int size, int from, int to) {
+	vector<int> fee(size + 1, INF);
+	fee[from] = 0;
+	priority_queue < pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+	pq.push({ 0,from });
+	while (!pq.empty()) {
+		int vertex = pq.top().second;
+		pq.pop();
+		for (int i = 0; i<graph[vertex].size(); i++) {
+			int cost = graph[vertex][i].first;
+			int neighbor = graph[vertex][i].second;
+			if (cost + fee[vertex] < fee[neighbor]) {
+				fee[neighbor] = cost + fee[vertex];
+				pq.push({ fee[neighbor],neighbor });
+			}
+		}
+	}
+	return fee[to];
+}
+int main() {
+	int N,M,X;
+	cin >> N >> M >> X;
+	vector<pair<int, int>>* graph = new vector<pair<int, int>>[N + 1];
+	vector<int> go(N + 1, INF);//파티 갈 때
+	vector<int> back;//파티 돌아올 때
+	int from, to, cost;
+	for (int i = 0; i < M; i++) {//graph[0] 은 비어있다.
+		cin >> from >> to >> cost;
+		graph[from].push_back({ cost,to });
+	}
+	back = dijkstra(graph, N, X);//X부터 각 마을까지의 거리
+	for (int i = 1; i < N+1; i++) {
+		if (i != X) go[i] = semi_dijkstra(graph, N, i, X);
+	}
+	int max = 0;
+	for (int i = 1; i < N + 1; i++) {
+		if (i != X && max < go[i]+back[i]) max = go[i]+back[i];
+	}
+	cout << max;
+	return 0;
+}
