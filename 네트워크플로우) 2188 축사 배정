@@ -1,0 +1,43 @@
+#include<iostream>
+#include<vector>
+
+#define MAX 201
+
+using namespace std;
+
+vector<int> cow[MAX];
+int barn[MAX];
+bool visited[MAX];
+int N, M;
+int cow_interest, interest;
+bool DFS(int cowNum) {//소 번호
+	for (int i = 0; i < cow[cowNum].size(); i++) {
+		if (visited[cow[cowNum][i]]) continue;
+		else {
+			visited[cow[cowNum][i]] = true;
+			if (!barn[cow[cowNum][i]] || DFS(barn[cow[cowNum][i]])) {
+				barn[cow[cowNum][i]] = cowNum;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+int main() {
+	cin >> N >> M;
+	for (int i = 1; i < N+1; i++) {
+		cin >> cow_interest;
+		for (int j = 0; j < cow_interest; j++) {
+			cin >> interest;
+			cow[i].push_back(interest);
+		}
+	}
+	int count = 0;
+	for (int i = 1; i < N+1; i++) {
+		fill(visited, visited + MAX, false);
+		if (DFS(i)) count++;
+	}
+	cout << count;
+	return 0;
+}
