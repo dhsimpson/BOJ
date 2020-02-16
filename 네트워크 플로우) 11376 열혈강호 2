@@ -1,0 +1,53 @@
+#include<iostream>
+#include<vector>
+
+#define MAX 1001
+
+using namespace std;
+
+vector<int> cow[MAX];
+int barn[MAX];
+bool visited[MAX];
+int N, M;
+int cow_interest, interest;
+bool DFS(int cowNum,int& cnt) {//소 번호, cnt 가 2가되면 종료한다.
+	for (int i = 0; i < cow[cowNum].size(); i++) {
+		if (visited[cow[cowNum][i]]) {
+			continue;
+		}
+		else {
+			visited[cow[cowNum][i]] = true;
+			int c = 3;
+			if (!barn[cow[cowNum][i]] || DFS(barn[cow[cowNum][i]],c)) {
+				barn[cow[cowNum][i]] = cowNum;
+				if (cnt >= 3)	return true; // 재귀함수의 return true 종료조건
+				else {
+					cnt++;
+					if (cnt == 2) return true; // 본 함수의 return true 종료조건
+				}
+			}
+		}
+	}
+	return false;
+}
+int main() {
+	cin >> N >> M;
+	for (int i = 1; i < N+1; i++) {
+		cin >> cow_interest;
+		for (int j = 0; j < cow_interest; j++) {
+			cin >> interest;
+			cow[i].push_back(interest);
+		}
+	}
+	int count = 0;
+	int cnt = 0;
+	for (int i = 1; i < N+1; i++) {
+		fill(visited, visited + MAX, false);
+		cnt = 0;
+		DFS(i,cnt);
+		if (cnt == 1) count += 1;
+		else if (cnt == 2)count += 2;
+	}
+	cout << count;
+	return 0;
+}
