@@ -1,0 +1,65 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#define MAX_V 52
+using namespace std;
+int ctoi(char input) {
+	if (input <= 'Z') return input - 'A';
+	return input - 'a' + 26;
+}
+int previous[MAX_V] = { 0 };// p 현재 BFS에서 정점의 방문 여부 체크, 저장
+int capacity[MAX_V][MAX_V] = { 0 };// c 흐를 수 있는 양
+int flow[MAX_V][MAX_V] = { 0 };// f 현재 흐르는 양
+
+vector<int> adj[MAX_V];// 인접 리스트 행렬
+
+int main() {
+	int N;
+	char from, to;
+	int amount, a, b;
+	int s = ctoi('A');
+	int t = ctoi('Z');
+	int result = 0;
+	int temp = -1;
+	cin >> N;
+	for (int i = 0; i < N; i++) {
+		cin >> from >> to >> amount;
+		a = ctoi(from);
+		b = ctoi(to);
+		capacity[a][b] = capacity[b][a] += amount;
+		adj[a].push_back(b);
+		adj[b].push_back(a);
+	}
+	while (true) {
+		fill(previous, previous + MAX_V, -1);
+		queue<int> q;
+		q.push(s);
+		while (!q.empty()&&previous[t]==-1) {
+			int curr = q.front();
+			q.pop();
+			if (curr == t) break;
+			for (int next : adj[curr]) {
+				if (previous[next] == -1 && capacity[curr][next] - flow[curr][next] > 0) {
+					previous[next] = curr;// 어느 정점으로 가는지가 아닌 어느 정점에서 왔는지를 기록 하고 path 찾을 땐 뒤에서 부터 확인 
+					q.push(next);
+                    if(next==t)break;
+				}
+			}
+		}
+		// t(End지점)을 거치지 않았다면(더 이상 거칠 곳이 없다면) 루프를 종료
+		if (previous[t] == -1) break;
+		// 한 번의 루프가 끝날 때 포드 폴커슨 기반해서 상태를 업데이트
+		temp = -1;
+		for (int i = t; i != s; i = previous[i]) {
+			if (temp == -1) temp = capacity[previous[i]][i] - flow[previous[i]][i];
+			else temp = min(temp, capacity[previous[i]][i] - flow[previous[i]][i]);
+		}
+		for (int i = t; i != s; i = previous[i]) {
+			flow[previous[i]][i] += temp;
+			flow[i][previous[i]] -= temp;
+		}
+		result += temp;
+	}
+	cout << result;
+	return 0;
+}
