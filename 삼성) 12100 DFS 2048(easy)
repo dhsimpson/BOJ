@@ -1,0 +1,189 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<queue>
+#include<limits>
+using namespace std;
+#define MAX 20
+int N;
+int map[MAX][MAX] = { -1 };
+int tempMap[MAX][MAX] = { -1 };
+int result = 0;
+queue<int> sumBlock(queue<int> check) {
+	queue<int> result;
+	int first = 0;
+	int second = 0;
+	while (!check.empty()) {
+		if (first == 0) { // 합치기 전 작업
+			first = check.front(); check.pop();
+			if (check.empty()) {
+				result.push(first);
+			}
+			continue;
+		}
+		else if(second==0) { // 합치냐 마냐
+			second = check.front(); check.pop();
+			if (first == second) { // 합침
+				result.push(first + second);
+				first = second = 0;
+			}
+			else { // 합치지 않음
+				result.push(first);
+				if (check.empty()) result.push(second);
+				first = second;
+				second = 0;
+			}
+		}
+	}
+	return result;
+}
+// 상하좌우 방향으로의 이동
+void top() {
+	// 위로 올릴 땐 맨 왼쪽부터 하나씩 세로로 계산
+	for (int j = 0; j < N; j++) {
+		queue<int> check;
+		for (int i = 0; i < N; i++) {
+			if (map[i][j] != 0) check.push(map[i][j]);
+		}
+		queue<int> toFill = sumBlock(check);
+		for (int i = 0; i < N; i++) {
+			if (!toFill.empty()) {
+				map[i][j] = toFill.front();
+				toFill.pop();
+			}
+			else {
+				map[i][j] = 0;
+			}
+		}
+	}
+}
+void bottom() {
+	for (int j = N - 1; j >= 0; j--) {
+		queue<int> check;
+		for (int i = N - 1; i >= 0; i--) {
+			if (map[i][j] != 0) check.push(map[i][j]);
+		}
+		queue<int> toFill = sumBlock(check);
+		for (int i = N - 1; i >= 0; i--) {
+			if (!toFill.empty()) {
+				map[i][j] = toFill.front();
+				toFill.pop();
+			}
+			else {
+				map[i][j] = 0;
+			}
+		}
+	}
+}
+void left() {
+	for (int i = 0; i < N; i++) {
+		queue<int> check;
+		for (int j = 0; j < N; j++) {
+			if (map[i][j] != 0) check.push(map[i][j]);
+		}
+		queue<int> toFill = sumBlock(check);
+		for (int j = 0; j < N; j++) {
+			if (!toFill.empty()) {
+				map[i][j] = toFill.front();
+				toFill.pop();
+			}
+			else {
+				map[i][j] = 0;
+			}
+		}
+	}
+}
+void right() {
+	for (int i = N-1; i >= 0; i--) {
+		queue<int> check;
+		for (int j = N-1; j >= 0; j--) {
+			if (map[i][j] != 0) check.push(map[i][j]);
+		}
+		queue<int> toFill = sumBlock(check);
+		for (int j = N - 1; j >= 0; j--) {
+			if (!toFill.empty()) {
+				map[i][j] = toFill.front();
+				toFill.pop();
+			}
+			else {
+				map[i][j] = 0;
+			}
+		}
+	}
+}
+void Do(int m) {
+	if (m == 0) {
+		top();
+	}
+	else if (m == 1) {
+		bottom();
+	}
+	else if (m == 2) {
+		left();
+	}
+	else if (m == 3) {
+		right();
+	}
+}
+// 가장 큰 숫자 반환 result에 값을 저장
+int maxNum() {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (map[i][j] > result) result = map[i][j];
+		}
+	}
+	return result;
+}
+void Print() {
+	for (int i = 0; i < N; i++) {
+		cout << "\n";
+		for (int j = 0; j < N; j++) {
+			cout << map[i][j] << " ";
+		}
+	}
+	cout << "\n";
+}
+// 주어진 상황에 맞게 이동시킴
+void move(int m1,int m2,int m3,int m4,int m5) {
+	Do(m1);
+	Do(m2);
+	Do(m3);
+	Do(m4);
+	Do(m5);
+	result = maxNum();
+}
+
+// 맵을 초기화
+void refresh() {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			map[i][j] = tempMap[i][j];
+		}
+	}
+}
+int main() {
+	cin >> N;
+	int temp;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> temp;
+			map[i][j] = tempMap[i][j] = temp;
+		}
+	}
+	// 총 5번 움직인다.
+	for (int m1 = 0; m1 < 4; m1++) {
+		for (int m2 = 0; m2 < 4; m2++) {
+			for (int m3 = 0; m3 < 4; m3++) {
+				for (int m4 = 0; m4 < 4; m4++) {
+					for (int m5 = 0; m5 < 4; m5++) {
+						move(m1, m2, m3, m4, m5);
+						refresh();
+					}
+				}
+			}
+		}
+	}
+
+	cout << result;
+	return 0;
+}
