@@ -1,0 +1,115 @@
+#include<iostream>
+#include<string>
+#include<queue>
+using namespace std;
+#define MAX 10
+#define INF 987654321
+struct pos {// 구슬의 row , col 위치를 저장하는 구조체
+	int y, x;
+	int count = 0;
+};
+pos R, B, O;
+char board[MAX][MAX + 1];// char배열의 마지막은 개행
+
+int N, M;
+int cnt = INF;
+
+// 상하좌우
+int y[4] = { -1,1,0,0 };
+int x[4] = { 0,0,-1,1 };
+
+void setBoard(char input,int i,int j) {
+	if (input == 'R') {
+		R.y = i;
+		R.x = j;
+	}
+	else if (input == 'B') {
+		B.y = i;
+		B.x = j;
+	}
+	else if (input == 'O') {
+		O.y = i;
+		O.x = j;
+	}
+	board[i][j] = input;
+}
+
+void BFS() {
+	queue<pair<pos, pos>> q;
+	q.push({ R,B });
+	pos Rt, Bt, Rtc, Btc;// Rtc : Red temp current
+	int visited[MAX][MAX][MAX][MAX] = { 0 };
+	visited[R.y][R.x][B.y][B.x] = 1;
+	while (!q.empty()) {
+		pos Rcur = q.front().first;
+		pos Bcur = q.front().second;
+		q.pop();
+		if (Rcur.count > 10) continue;
+		if (board[Bcur.y][Bcur.x] == 'O') { continue; }
+		if (board[Rcur.y][Rcur.x] == 'O') { // Red만 탈출 성공했을 때
+			if (cnt == -1 || cnt > Rcur.count) {
+				cnt = Rcur.count;
+				continue;
+			}
+		}
+
+		for (int i = 0; i < 4; i++) {
+			pos Rnext = Rcur;
+			pos Bnext = Bcur;
+
+			while (true) {
+				Rnext.y += y[i], Rnext.x += x[i];
+				if (board[Rnext.y][Rnext.x] == '#') {
+					Rnext.y -= y[i], Rnext.x -= x[i];
+					break;
+				}
+				else if (board[Rnext.y][Rnext.x] == 'O') {
+					break;
+				}
+			}
+
+			while (true) {
+				Bnext.y += y[i], Bnext.x += x[i];
+				if (board[Bnext.y][Bnext.x] == '#') {
+					Bnext.y -= y[i], Bnext.x -= x[i];
+					break;
+				}
+				else if (board[Bnext.y][Bnext.x] == 'O') {
+					break;
+				}
+			}
+
+			if (Rnext.y == Bnext.y && Rnext.x == Bnext.x && board[Rnext.y][Rnext.x]!='O') {
+				int Rgap = abs(Rnext.y - Rcur.y) + abs(Rnext.x - Rcur.x);
+				int Bgap = abs(Bnext.y - Bcur.y) + abs(Bnext.x - Bcur.x);
+				if (Rgap > Bgap) {
+					Rnext.y -= y[i], Rnext.x -= x[i];
+				}
+				else {
+					Bnext.y -= y[i], Bnext.x -= x[i];
+				}
+			}
+
+			if (visited[Rnext.y][Rnext.x][Bnext.y][Bnext.x] == 0) {
+				visited[Rnext.y][Rnext.x][Bnext.y][Bnext.x] = 1;
+				Rnext.count += 1;
+				q.push({ Rnext,Bnext });
+			}
+		}
+	}
+}
+
+int main() {
+	cin >> N >> M;
+	string temp;
+	for (int i = 0; i < N; i++) {
+		cin >> temp;
+		for (int j = 0; j < M; j++) {
+			setBoard(temp[j], i, j);
+		}
+	}
+	BFS();
+	if (cnt == INF) cout << -1;
+	else cout << cnt;
+	return 0;
+}
