@@ -1,0 +1,92 @@
+#include<iostream>
+using namespace std;
+#define MAX 20
+#define front 0
+#define back 1
+#define top 2
+#define bottom 3
+#define left 4
+#define right 5
+int map[MAX][MAX];
+// 주사위 상태를 알고 싶다면 아랫면, 오른쪽면만 알면 된다.
+int dice[6] = { 0 }; // 주사위 면의 숫자
+int N, M, x, y, k;
+int cmd;
+bool east() {// map 밖으로 나가면 해당 명령 무시 & 출력하지 않음
+	if (y + 1 >= M) return false;
+	y += 1;
+	int temp = dice[left];
+	dice[left] = dice[bottom];
+	dice[bottom] = dice[right];
+	dice[right] = dice[top];
+	dice[top] = temp;
+	return true;
+}
+bool west() {
+	if (y - 1 < 0) return false;
+	y -= 1;
+	int temp = dice[top];
+	dice[top] = dice[right];
+	dice[right] = dice[bottom];
+	dice[bottom] = dice[left];
+	dice[left] = temp;
+	return true;
+}
+bool north() {
+	if (x - 1 < 0) return false;
+	x -= 1;
+	int temp = dice[front];
+	dice[front] = dice[top];
+	dice[top] = dice[back];
+	dice[back] = dice[bottom];
+	dice[bottom] = temp;
+	return true;
+}
+bool south() {
+	if (x + 1 >= N) return false;
+	x += 1;
+	int temp = dice[bottom];
+	dice[bottom] = dice[back];
+	dice[back] = dice[top];
+	dice[top] = dice[front];
+	dice[front] = temp;
+	return true;
+}
+void moveDice(int cmd) {
+	bool res = false;
+	if (cmd == 1) {
+		res = east();
+	}
+	else if (cmd == 2) {
+		res = west();
+	}
+	else if (cmd == 3) {
+		res = north();
+	}
+	else if (cmd == 4) {
+		res = south();
+	}
+	if (res) {
+		if (map[x][y] == 0) {
+			map[x][y] = dice[bottom];
+		}
+		else {
+			dice[bottom] = map[x][y];
+			map[x][y] = 0;
+		}
+		cout << dice[top] << "\n";
+	}
+}
+int main() {
+	cin >> N >> M >> x >> y >> k;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> map[i][j];
+		}
+	}
+	for (int i = 0; i < k; i++) {
+		cin >> cmd;
+		moveDice(cmd);
+	}
+	return 0;
+}
