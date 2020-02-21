@@ -1,0 +1,102 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<queue>
+#include<limits>
+using namespace std;
+#define MAX 500
+int N, M;
+int map[MAX][MAX];
+int maxSum = 0;
+vector<pair<int, int>> tetro1; // ㄱ ㄴ 모양에다 하나씩 더하기
+vector<pair<int, int>> tetro2;
+vector<pair<int, int>> tetro3;
+vector<pair<int, int>> tetro4;
+
+vector<pair<int, int>> stick1;
+vector<pair<int, int>> stick2;
+
+int yi[4] = { -1,1,0,0 };
+int xj[4] = { 0,0,-1,1 };
+void patch(int y, int x,vector<pair<int,int>> tetro) {
+	int semiSum = 0;
+	int temp = 0;
+	int y0 = tetro[0].first + y;
+	int x0 = tetro[0].second + x;
+	int y1 = tetro[1].first + y;
+	int x1 = tetro[1].second + x;
+	int y2 = tetro[2].first + y;
+	int x2 = tetro[2].second + x;
+	semiSum = map[y0][x0] + map[y1][x1] + map[y2][x2];
+	for (int i = 0; i < 4; i++) {
+		if (0 <= y0 + yi[i] && y0 + yi[i] < N && 0 <= x0 + xj[i] && x0 + xj[i] < M) {// 추가 블록이 Map 밖으로 나가지 않을 때
+			if ( !(y0+yi[i] == y1 && x0+xj[i]==x1) ) {
+				if (!(y0 + yi[i] == y2 && x0 + xj[i]==x2)) {
+					if (map[y0 + yi[i]][x0 + xj[i]] > temp) temp = map[y0 + yi[i]][x0 + xj[i]];
+				}
+			}
+		}
+	}
+	for (int i = 0; i < 4; i++) {
+		if (0 <= y1 + yi[i] && y1 + yi[i] < N && 0 <= x1 + xj[i] && x1 + xj[i] < M) {// 추가 블록이 Map 밖으로 나가지 않을 때
+			if (!(y1 + yi[i] == y0 && x1 + xj[i] == x0)) {
+				if (!(y1 + yi[i] == y2 && x1 + xj[i] == x2)) {
+					if (map[y1 + yi[i]][x1 + xj[i]] > temp) temp = map[y1 + yi[i]][x1 + xj[i]];
+				}
+			}
+		}
+	}
+	for (int i = 0; i < 4; i++) {
+		if (0 <= y2 + yi[i] && y2 + yi[i] < N && 0 <= x2 + xj[i] && x2 + xj[i] < M) {// 추가 블록이 Map 밖으로 나가지 않을 때
+			if (!(y2 + yi[i] == y0 && x2 + xj[i] == x0)) {
+				if (!(y2 + yi[i] == y1 && x2 + xj[i] == x1)) {
+					if (map[y2 + yi[i]][x2 + xj[i]] > temp) temp = map[y2 + yi[i]][x2 + xj[i]];
+				}
+			}
+		}
+	}
+	if (semiSum + temp > maxSum) maxSum = semiSum + temp;
+}
+void domino(vector<pair<int, int>> tetro) {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			if (tetro[0].first + i < N && tetro[0].second + j < M && tetro[1].first + i < N && tetro[1].second + j < M && tetro[2].first + i < N && tetro[2].second + j < M) {
+				patch(i, j, tetro);
+			}
+		}
+	}
+}
+void dominoStick(vector<pair<int, int>> tetro) {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			int sum = 0;
+			for (int k = 0; k < 4; k++) {
+				if (tetro[k].first+i < N && tetro[k].second+j < M) {
+					sum += map[tetro[k].first + i][tetro[k].second + j];
+				}
+				else {
+					sum == 0; break;
+				}
+			}
+			if (sum > maxSum) maxSum = sum;
+		}
+	}
+}
+int main() {
+	cin >> N >> M;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> map[i][j];
+		}
+	}
+	tetro1.push_back({ 0,0 }); tetro1.push_back({ 0,1 }); tetro1.push_back({ 1,1 });
+	tetro2.push_back({ 0,0 }); tetro2.push_back({ 0,1 }); tetro2.push_back({ 1,0 });
+	tetro3.push_back({ 0,0 }); tetro3.push_back({ 1,0 }); tetro3.push_back({ 1,1 });
+	tetro4.push_back({ 0,1 }); tetro4.push_back({ 1,0 }); tetro4.push_back({ 1,1 });
+	stick1.push_back({ 0,0 }); stick1.push_back({ 0,1 }); stick1.push_back({ 0,2 }); stick1.push_back({ 0,3 });
+	stick2.push_back({ 0,0 }); stick2.push_back({ 1,0 }); stick2.push_back({ 2,0 }); stick2.push_back({ 3,0 });
+	domino(tetro1); domino(tetro2); domino(tetro3); domino(tetro4);
+	dominoStick(stick1); dominoStick(stick2);
+	cout << maxSum;
+	return 0;
+}
