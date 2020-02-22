@@ -1,0 +1,110 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<queue>
+#include<limits>
+using namespace std;
+#define MAX 50
+int N, M;
+int r, c, dir;
+int map[MAX][MAX];
+int cleanCount = 0;
+void rotate() {
+	if (dir == 0) dir = 3;
+	else --dir;
+}
+void clean(int r, int c);
+void back(int r,int c) {
+	if (dir == 0) {
+		if (r + 1 < N && map[r + 1][c] != 1)clean(r + 1, c);
+	}
+	else if (dir == 1) {
+		if (0 <= c - 1 && map[r][c - 1] != 1)clean(r, c - 1);
+	}
+	else if (dir == 2) {
+		if (0 <= r - 1 && map[r - 1][c] != 1)clean(r - 1, c);
+	}
+	else if (dir == 3) {
+		if (c + 1 < M && map[r][c + 1] != 1)clean(r, c + 1);
+	}
+}
+void clean(int r,int c) {
+	int cnt = 0;
+	if (map[r][c] != 2) {
+		map[r][c] = 2;
+		cleanCount++;
+	}
+
+	while (true) {
+		if (cnt == 4) {
+			back(r,c);
+			break;
+		}
+		// 북쪽 보고 있을 때
+		if (dir == 0) {
+			if (0 <= c - 1 && map[r][c - 1] == 0) {
+				rotate();
+				clean(r, c - 1);
+				return;
+			}
+			else {
+				rotate();
+				cnt++;
+				continue;
+			}
+		}
+		// 서쪽 보고 있을 때
+		if (dir == 3) {
+			if (r + 1 < N && map[r + 1][c] == 0) {
+				rotate();
+				clean(r + 1, c);
+				return;
+			}
+			else {
+				rotate();
+				cnt++;
+				continue;
+			}
+		}
+		// 남쪽 보고 있을 때
+		if (dir == 2) {
+			if (c + 1 < M && map[r][c+1] == 0) {
+				rotate();
+				clean(r, c+1);
+				return;
+			}
+			else {
+				rotate();
+				cnt++;
+				continue;
+			}
+		}
+		// 동쪽 보고 있을 때
+		if (dir == 1) {
+			if (0 <= r - 1 && map[r-1][c] == 0) {
+				rotate();
+				clean(r-1, c);
+				return;
+			}
+			else {
+				rotate();
+				cnt++;
+				continue;
+			}
+		}
+	}
+}
+int main() {
+	cin >> N >> M;
+	cin >> r >> c >> dir;
+	int temp;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> temp;
+			map[i][j] = temp;
+		}
+	}
+	clean(r, c);
+	cout << cleanCount;
+	return 0;
+}
