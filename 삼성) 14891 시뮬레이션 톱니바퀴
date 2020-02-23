@@ -1,0 +1,66 @@
+#include<iostream>
+#include<string>
+int topni[5][8];
+string state;
+int K;
+int result = 0;
+// 톱니 간에 회전가능한지 안한지
+bool joint[4] = { false };
+void Right(int num) {
+	int temp = topni[num][7];
+	for (int i = 7; i > 0; i--) topni[num][i] = topni[num][i - 1];
+	topni[num][0] = temp;
+}
+void Left(int num) {
+	int temp = topni[num][0];
+	for (int i = 0; i < 7; i++) topni[num][i] = topni[num][i + 1];
+	topni[num][7] = temp;
+}
+void Rotate(int num,int dir) {
+	fill(joint, joint + 4, false);
+	if (topni[1][2] != topni[2][6]) joint[1] = true;
+	if (topni[2][2] != topni[3][6]) joint[2] = true;
+	if (topni[3][2] != topni[4][6]) joint[3] = true;
+	int tempDir = dir;
+	if (dir == 1) Right(num);
+	else if (dir == -1) Left(num);
+	for (int i = num-1; i >= 1; i--) { // 기준 num 번째 톱니로 부터 왼쪽에 대한 처리
+		if (joint[i]) {
+			dir *= -1;
+			if (dir == 1) Right(i);
+			else if (dir == -1) Left(i);
+		}
+		else break;
+	}
+	dir = tempDir;
+	for (int i = num + 1; i <= 4; i++) { // 기준 num 번째 톱니로 부터 왼쪽에 대한 처리
+		if (joint[i-1]) {
+			dir *= -1;
+			if (dir == 1) Right(i);
+			else if (dir == -1) Left(i);
+		}
+		else break;
+	}
+}
+int main() {
+	int num, dir; // 회전시킬 톱니 번호와 방향
+	cin >> state;
+	for (int i = 0; i < 8; i++) topni[1][i] = state[i]-48;
+	cin >> state;
+	for (int i = 0; i < 8; i++) topni[2][i] = state[i]-48;
+	cin >> state;
+	for (int i = 0; i < 8; i++) topni[3][i] = state[i]-48;
+	cin >> state;
+	for (int i = 0; i < 8; i++) topni[4][i] = state[i]-48;
+	cin >> K;
+	for (int i = 0; i < K; i++) {
+		cin >> num >> dir;
+		Rotate(num, dir);
+	}
+	if (topni[1][0] == 1) result += 1;
+	if (topni[2][0] == 1) result += 2;
+	if (topni[3][0] == 1) result += 4;
+	if (topni[4][0] == 1) result += 8;
+	cout << result;
+	return 0;
+}
