@@ -1,0 +1,95 @@
+#include<iostream>
+using namespace std;
+#define MAX 100
+int map[MAX][MAX];
+int check[MAX] = { 0 };
+int N, L;
+int road = 0;
+bool raw(int i) {
+	int first = 0;
+	int second = 0;
+	fill(check, check + MAX, 0);
+	for (int j = 0; j < N; j++) {
+		if (first == 0) {
+			first = map[i][j];
+			continue;
+		}
+		second = map[i][j];
+		if (abs(first - second) >= 2) return false;
+		if (first - second == 0) {
+			first = second;
+			continue;
+		}
+		if (first - second == 1) {
+			if (j + L > N) return false;
+			for (int t = j; t < j + L; t++) {
+				if (second == map[i][t]) check[t] = 1;
+				else return false;
+			}
+		}
+		if (first - second == -1) {
+			if (j - L < 0) return false;
+			for (int t = j - 1; t >= j - L; t--) {
+				if (check[t] == 1)return false;
+				if (first == map[i][t]) check[t] = 1;
+				else return false;
+			}
+		}
+		first = second;
+	}
+	return true;
+}
+bool col(int j) {
+	int first = 0;
+	int second = 0;
+	fill(check, check + MAX, 0);
+	for (int i = 0; i < N; i++) {
+		if (first == 0) {
+			first = map[i][j];
+			continue;
+		}
+		second = map[i][j];
+		if (abs(first - second) >= 2) return false;
+		if (first - second == 0) {
+			first = second;
+			continue;
+		}
+		if (first - second == 1) {
+			if (i + L > N) return false;
+			for (int t = i; t < i + L; t++) {
+				if (second == map[t][j]) check[t] = 1;
+				else return false;
+			}
+		}
+		if (first - second == -1) {
+			if (i - L < 0) return false;
+			for (int t = i - 1; t >= i - L; t--) {
+				if (check[t] == 1) return false;
+				if (first == map[t][j]) check[t] = 1;
+				else return false;
+			}
+		}
+		first = second;
+	}
+	return true;
+}
+void runway() {
+	for (int i = 0; i < N; i++) {
+		if (raw(i)) road++;
+	}
+	for (int j = 0; j < N; j++) {
+		if (col(j)) road++;
+	}
+}
+int main() {
+	// 경사로 놓는 조건 : 높이차이가 1, 경사로 길이 L가 같은 높이를 덮어야 한다.
+	cin >> N >> L;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> map[i][j];
+		}
+	}
+	runway();
+	cout << road;
+	return 0;
+}
