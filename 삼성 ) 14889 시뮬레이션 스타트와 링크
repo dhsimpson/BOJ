@@ -1,0 +1,51 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<queue>
+#include<limits>
+using namespace std;
+#define MAX 21
+
+int team[MAX][MAX];
+bool startCheck[MAX] = { 0 };
+int N;
+
+// 각 팀의 능력치
+int gap = 987654321;
+void startLink(int depth,int t) {
+	for (int i = 1; i <= N; i++) {
+		if (!startCheck[i] && i>t) {
+			startCheck[i] = true;
+			if (depth == N / 2) {
+				int startCap = 0;
+				int linkCap = 0;
+				for (int i = 1; i <= N; i++) {
+					for (int j = i + 1; j <= N; j++) {
+						if (startCheck[i] && startCheck[j]) {
+							startCap += team[i][j] + team[j][i];
+						}
+						else if (!startCheck[i] && !startCheck[j]) {
+							linkCap += team[i][j] + team[j][i];
+						}
+					}
+				}
+				gap = min(gap, abs(startCap - linkCap));
+			}
+			else {
+				startLink(depth + 1, t + 1);
+			}
+			startCheck[i] = false; // 해당 반복이 끝나면 체크를 풀어준다.
+		}
+	}
+}
+int main() {
+	cin >> N;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			cin >> team[i][j];
+		}
+	}
+	startLink(1,1);
+	cout << gap;
+	return 0;
+}
