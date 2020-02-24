@@ -1,0 +1,267 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+#define MAX 8
+struct cctv {
+	int version;
+	int i, j;
+	int dir;
+};
+int N, M;
+int map[MAX][MAX];
+int tempMap[MAX][MAX];
+int res = 987654321;
+vector<cctv> CC;
+void refresh() {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			map[i][j] = tempMap[i][j];
+		}
+	}
+}
+void See1(cctv cc) {
+	if (cc.dir == 0) {
+		for (int i = cc.i - 1; i >= 0; i--) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0) map[i][cc.j] = -1;
+			else continue;
+		}
+	}
+	else if (cc.dir == 1) {
+		for (int j = cc.j + 1; j < M; j++) {
+			if (map[cc.i][j] == 6)break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+	}
+	else if (cc.dir == 2) {
+		for (int i = cc.i + 1; i < N; i++) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0)map[i][cc.j] = -1;
+			else continue;
+		}
+	}
+	else if (cc.dir == 3) {
+		for (int j = cc.j - 1; j >= 0; j--) {
+			if (map[cc.i][j] == 6) break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+	}
+}
+void See2(cctv cc) {
+	if (cc.dir == 0 || cc.dir==2) {
+		for (int i = cc.i - 1; i >= 0; i--) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0) map[i][cc.j] = -1;
+			else continue;
+		}
+		for (int i = cc.i + 1; i < N; i++) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0)map[i][cc.j] = -1;
+			else continue;
+		}
+	}
+	else if (cc.dir == 1 || cc.dir==3) {
+		for (int j = cc.j + 1; j < M; j++) {
+			if (map[cc.i][j] == 6)break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+		for (int j = cc.j - 1; j >= 0; j--) {
+			if (map[cc.i][j] == 6) break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+	}
+}
+void See3(cctv cc) {
+	if (cc.dir == 0) {
+		for (int i = cc.i - 1; i >= 0; i--) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0) map[i][cc.j] = -1;
+			else continue;
+		}
+		for (int j = cc.j + 1; j < M; j++) {
+			if (map[cc.i][j] == 6)break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+	}
+	else if (cc.dir == 1) {
+		for (int j = cc.j + 1; j < M; j++) {
+			if (map[cc.i][j] == 6)break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+		for (int i = cc.i + 1; i < N; i++) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0)map[i][cc.j] = -1;
+			else continue;
+		}
+	}
+	else if (cc.dir == 2) {
+		for (int i = cc.i + 1; i < N; i++) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0)map[i][cc.j] = -1;
+			else continue;
+		}
+		for (int j = cc.j - 1; j >= 0; j--) {
+			if (map[cc.i][j] == 6) break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+	}
+	else if (cc.dir == 3) {
+		for (int i = cc.i - 1; i >= 0; i--) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0) map[i][cc.j] = -1;
+			else continue;
+		}
+		for (int j = cc.j - 1; j >= 0; j--) {
+			if (map[cc.i][j] == 6) break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+	}
+}
+void See4(cctv cc) {
+	if (cc.dir == 0) {
+		for (int i = cc.i - 1; i >= 0; i--) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0) map[i][cc.j] = -1;
+			else continue;
+		}
+		for (int j = cc.j + 1; j < M; j++) {
+			if (map[cc.i][j] == 6)break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+		for (int j = cc.j - 1; j >= 0; j--) {
+			if (map[cc.i][j] == 6) break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+	}
+	else if (cc.dir == 1) {
+		for (int i = cc.i - 1; i >= 0; i--) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0) map[i][cc.j] = -1;
+			else continue;
+		}
+		for (int j = cc.j + 1; j < M; j++) {
+			if (map[cc.i][j] == 6)break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+		for (int i = cc.i + 1; i < N; i++) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0)map[i][cc.j] = -1;
+			else continue;
+		}
+	}
+	else if (cc.dir == 2) {
+		for (int j = cc.j + 1; j < M; j++) {
+			if (map[cc.i][j] == 6)break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+		for (int i = cc.i + 1; i < N; i++) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0)map[i][cc.j] = -1;
+			else continue;
+		}
+		for (int j = cc.j - 1; j >= 0; j--) {
+			if (map[cc.i][j] == 6) break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+	}
+	else if (cc.dir == 3) {
+		for (int i = cc.i - 1; i >= 0; i--) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0) map[i][cc.j] = -1;
+			else continue;
+		}
+		for (int i = cc.i + 1; i < N; i++) {
+			if (map[i][cc.j] == 6) break;
+			else if (map[i][cc.j] == 0)map[i][cc.j] = -1;
+			else continue;
+		}
+		for (int j = cc.j - 1; j >= 0; j--) {
+			if (map[cc.i][j] == 6) break;
+			else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+			else continue;
+		}
+	}
+}
+void See5(cctv cc) {
+	for (int i = cc.i - 1; i >= 0; i--) {
+		if (map[i][cc.j] == 6) break;
+		else if (map[i][cc.j] == 0) map[i][cc.j] = -1;
+		else continue;
+	}
+	for (int j = cc.j + 1; j < M; j++) {
+		if (map[cc.i][j] == 6)break;
+		else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+		else continue;
+	}
+	for (int i = cc.i + 1; i < N; i++) {
+		if (map[i][cc.j] == 6) break;
+		else if (map[i][cc.j] == 0)map[i][cc.j] = -1;
+		else continue;
+	}
+	for (int j = cc.j - 1; j >= 0; j--) {
+		if (map[cc.i][j] == 6) break;
+		else if (map[cc.i][j] == 0)map[cc.i][j] = -1;
+		else continue;
+	}
+}
+void cctvSee(cctv cc) {
+	if (cc.version == 1) See1(cc);
+	else if (cc.version == 2) See2(cc);
+	else if (cc.version == 3) See3(cc);
+	else if (cc.version == 4) See4(cc);
+	else if (cc.version == 5) See5(cc);
+}
+void CCTV(int depth) {// depth == CC 의 원소 수
+	if (depth == CC.size()) {
+		int cnt = 0;
+		refresh();
+		for (int i = 0; i < CC.size(); i++) {
+			cctvSee(CC[i]);
+		}
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				if (map[i][j] == 0) cnt++;
+			}
+		}
+		if (cnt < res) res = cnt;
+		return;
+	}
+	CC[depth].dir = 0; CCTV(depth + 1);
+	CC[depth].dir = 1; CCTV(depth + 1);
+	CC[depth].dir = 2; CCTV(depth + 1);
+	CC[depth].dir = 3; CCTV(depth + 1);
+}
+int main() {
+	cin >> N >> M;
+	int temp;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < M; j++) {
+			cin >> temp;
+			map[i][j] = tempMap[i][j] = temp;
+			if (1 <= temp && temp <= 5) {
+				cctv t;
+				t.version = temp;
+				t.i = i;
+				t.j = j;
+				t.dir = 0;
+				CC.push_back(t);
+			}
+		}
+	}
+	CCTV(0);
+	cout << res;
+	return 0;
+}
