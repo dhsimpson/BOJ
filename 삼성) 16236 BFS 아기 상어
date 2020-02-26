@@ -1,0 +1,109 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+using namespace std;
+#define MAX 20
+struct fish {
+	int i, j;
+	int size = 0;
+	int ate = 0;
+	int time = 0;
+};
+int N;
+int time = 0;
+fish shark;
+int map[MAX][MAX];
+vector<fish> fishes;
+int xj[4] = { 0,0,-1,1 };
+int yi[4] = { -1,1,0,0 };
+bool searchFish() {
+	fishes.clear();
+	int check[MAX][MAX] = { 0, };
+	queue<fish> q;
+	fish t;
+	t.i = shark.i; t.j = shark.j; t.time = 0;
+	q.push(t);
+	int y, x, time;
+	while (!q.empty()) {
+		y = q.front().i; x = q.front().j; time = q.front().time;
+		q.pop();
+		for (int i = 0; i < 4; i++) {
+			if (0 <= y + yi[i] && y + yi[i] < N && 0 <= x + xj[i] && x + xj[i] < N) {
+				if (check[y + yi[i]][x + xj[i]] == 0 && map[y + yi[i]][x + xj[i]] <= shark.size) {
+					fish tempF;
+					tempF.i = y + yi[i]; tempF.j = x + xj[i]; tempF.time = time + 1;
+					if (map[y + yi[i]][x + xj[i]] < shark.size && map[y + yi[i]][x + xj[i]] != 0) {
+						fishes.push_back(tempF);
+					}
+					q.push(tempF);
+					check[y + yi[i]][x + xj[i]] = 1;
+				}
+			}
+		}
+	}
+	if (fishes.size() == 0) {
+		return false;
+	}
+	return true;
+}
+fish nearFish() {
+	int y, x;
+	int dis = 987654321;
+	for (int i = 0; i < fishes.size(); i++) { // 가장 가까운 물고기들 찾기
+		dis = min(dis, fishes[i].time);
+	}
+	int yMin = 987654321;
+	for (int i = 0; i < fishes.size(); i++) { // 가장 가까운 물고기 중 가장 위에 있는 물고기 찾기
+		if (dis == fishes[i].time) {
+			if (yMin > fishes[i].i) {
+				yMin = y = fishes[i].i;
+				x = fishes[i].j;
+			}
+		}
+	}
+	for (int i = 0; i < fishes.size(); i++) { // 가장 가까운 물고기 중 가장 왼쪽에 있는 물고기 찾기
+		if (dis == fishes[i].time && y==fishes[i].i) {
+			if (x > fishes[i].j) {
+				x = fishes[i].j;
+			}
+		}
+	}
+	fish res;
+	res.i = y; res.j = x; res.time = dis;
+	return res; // 상어가 먹을 물고기의 위치를 반환
+}
+bool babyShark() {
+	if (!searchFish()) {
+		return false;
+	}
+	fish eatF = nearFish(); // 가장 가까운 물고기 찾기
+	time += eatF.time; // 가장 가까운 물고기 까지 찾아가기. time이 늘어남
+	map[eatF.i][eatF.j] = 0;
+	shark.ate++;
+	if (shark.ate == shark.size) {
+		shark.size++;
+		shark.ate = 0;
+	}
+	shark.i = eatF.i;
+	shark.j = eatF.j;
+	return true;
+}
+int main() {
+	cin >> N;
+	int temp;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> temp;
+			if (temp == 9) {
+				shark.i = i; shark.j = j; shark.size = 2; shark.ate = 0;
+				map[i][j] = 0;
+			}
+			else {
+				map[i][j] = temp;
+			}
+		}
+	}
+	while (babyShark());
+	cout << time;
+	return 0;
+}
