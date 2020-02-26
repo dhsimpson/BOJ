@@ -1,0 +1,112 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<queue>
+#include<limits>
+#include<algorithm>
+using namespace std;
+#define MAX 11
+struct tree {
+	int y, x;
+	int age;
+};
+int N, M, K; // 땅크기, 첨에 심는 나무수, 나무 확인하는 년수 
+int map[MAX][MAX]; // 땅의 영양 상태
+int meal[MAX][MAX];
+vector<int> trees[MAX][MAX];
+vector<tree> death;
+int yi[8] = { -1,-1,0,1,1,1,0,-1 };
+int xj[8] = { 0,1,1,1,0,-1,-1,-1 };
+
+void spring() {
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			sort(trees[i][j].begin(), trees[i][j].end()); // 우선 나이를 오름차순으로 정렬한다.
+		}
+	}
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			vector<int> tr;
+			for (int t = 0; t < trees[i][j].size(); t++) {
+				if ( map[i][j] - trees[i][j][t] >= 0) {
+					map[i][j] -= trees[i][j][t];
+					trees[i][j][t] += 1;
+					tr.push_back(trees[i][j][t]);
+				}
+				else {// 나무가 충분한 양분을 섭취하지 못해 죽는 경우
+					tree tempT;
+					tempT.y = i; tempT.x = j; tempT.age = trees[i][j][t];
+					death.push_back(tempT);
+				}
+			}
+			trees[i][j] = tr;
+		}
+	}
+}
+void summer() {
+	for (int i = 0; i < death.size(); i++) {
+		map[death[i].y][death[i].x] += death[i].age / 2;
+	}
+	death.clear();
+}
+void fall() {
+	vector<pair<int, int>> tempTree;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			for (int t = 0; t < trees[i][j].size(); t++) {
+				if (trees[i][j][t] % 5==0) {
+					tempTree.push_back({ i,j });
+				}
+			}
+		}
+	}
+	int y, x;
+	for (int i = 0; i < tempTree.size(); i++) {
+		y = tempTree[i].first; x = tempTree[i].second;
+		for (int s = 0; s < 8; s++) {
+			if (1 <= y + yi[s] && y + yi[s] <= N && 1 <= x + xj[s] && x + xj[s] <= N) {
+				trees[y + yi[s]][x + xj[s]].push_back(1); // 나이 1살 짜리 나무가 추가된다.
+			}
+		}
+	}
+}
+void winter() {
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			map[i][j] += meal[i][j];
+		}
+	}
+}
+int alive() {
+	int res = 0;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			res += trees[i][j].size();
+		}
+	}
+	return res;
+}
+int main() {
+	cin >> N >> M >> K;
+	int temp;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= N; j++) {
+			map[i][j] = 5;
+			cin >> temp;
+			meal[i][j] = temp;
+		}
+	}
+	int y, x,age;
+	for (int i = 0; i < M; i++) {
+		cin >> y >> x >> age;
+		trees[y][x].push_back(age);
+	}
+	for (int i = 0; i < K; i++) {
+		spring(); //양분먹기 and 나이먹기
+		summer(); // 양분 못먹고 죽은 나무가 양분으로 변하기
+		fall(); // 팔방으로 번식하기(나이가 5의 배수인 나무만)
+		winter(); // 양분 추가, map에 meal 추가하기
+	}
+	cout << alive();
+	return 0;
+}
