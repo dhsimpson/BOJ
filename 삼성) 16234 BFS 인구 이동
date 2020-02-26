@@ -1,0 +1,67 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+#define MAX 50
+int N, L, R;
+int cnt = 0;
+
+int map[MAX][MAX];
+int tempMap[MAX][MAX];
+bool check[MAX][MAX];
+int yi[4] = { -1,1,0,0 };
+int xj[4] = { 0,0,-1,1 };
+vector<pair<int, int>> v;
+
+void BFS(int i, int j) {
+	check[i][j] = true;
+	v.push_back({ i,j });
+	for (int t = 0; t < 4; t++) {
+		if (0 <= i + yi[t] && i + yi[t] < N && 0 <= j + xj[t] && j + xj[t] < N && !check[i + yi[t]][j + xj[t]]) {
+			int gap = abs(map[i + yi[t]][j + xj[t]] - map[i][j]);
+			if (L <= gap && gap <= R) BFS(i + yi[t], j + xj[t]);
+		}
+	}
+}
+void unionTransfer() {
+	int sum = 0;
+	for (int i = 0; i < v.size(); i++) {
+		sum += map[v[i].first][v[i].second];
+	}
+	int newPeople = sum / v.size();
+	for (int i = 0; i < v.size(); i++) {
+		tempMap[v[i].first][v[i].second] = newPeople;
+	}
+}
+bool refresh() {
+	bool isChanged = false;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (map[i][j] != tempMap[i][j]) {
+				map[i][j] = tempMap[i][j];
+				isChanged = true;
+			}
+			check[i][j] = false;
+		}
+	}
+	if(isChanged) cnt++;
+	return isChanged;
+}
+bool transfer() {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (!check[i][j]) {
+				v.clear();
+				BFS(i, j);
+				unionTransfer();
+			}
+		}
+	}
+	return refresh();
+}
+int main() {
+	cin >> N >> L >> R;
+	for (int i = 0; i < N; i++)for (int j = 0; j < N; j++) cin >> map[i][j];
+	while (transfer());
+	cout << cnt;
+	return 0;
+}
