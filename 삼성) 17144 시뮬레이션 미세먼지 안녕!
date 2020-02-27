@@ -1,0 +1,142 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+#define MAX 51
+int R, C, T;
+int map[MAX][MAX] = { 0, };
+int tempMap[MAX][MAX] = { 0, };
+int xj[4] = { 0,0,-1,1 };
+int yi[4] = { -1,1,0,0 };
+pair<int, int> fresh1, fresh2;
+void spread() {
+	for (int i = 1; i <= R; i++) {
+		for (int j = 1; j <= C; j++) {
+			int cnt = 0;
+			for (int t = 0; t < 4; t++) {
+				if (1 <= i + yi[t] && i + yi[t] <= R && 1 <= j + xj[t] && j + xj[t] <= C) {
+					if (map[i][j] > 0 && map[i + yi[t]][j + xj[t]]!=-1) {
+						tempMap[i + yi[t]][j + xj[t]] += map[i][j] / 5;
+						cnt++;
+					}
+				}
+			}
+			if (cnt > 0)map[i][j] -= (map[i][j] / 5) * cnt;
+		}
+	}
+	for (int i = 1; i <= R; i++) {
+		for (int j = 1; j <= C; j++) {
+			if (map[i][j] != -1) {
+				map[i][j] += tempMap[i][j];
+				tempMap[i][j] = 0;
+			}
+		}
+	}
+}
+void upTurn() {
+	for (int i = 2; i < C; i++) {
+		tempMap[fresh1.first][i + 1] = map[fresh1.first][i];
+	}
+	for (int i = fresh1.first; i > 1; i--) {
+		tempMap[i - 1][C] = map[i][C];
+	}
+	for (int i = C; i > 1; i--) {
+		tempMap[1][i - 1] = map[1][i];
+	}
+	for (int i = 1; i < fresh1.first; i++) {
+		tempMap[i + 1][1] = map[i][1];
+	}
+	tempMap[fresh1.first][fresh1.second] = -1;
+}
+void downTurn() {
+	for (int i = 2; i < C; i++) {
+		tempMap[fresh2.first][i + 1] = map[fresh2.first][i];
+	}
+	for (int i = fresh2.first; i < R; i++) {
+		tempMap[i + 1][C] = map[i][C];
+	}
+	for (int i = C; i > 1; i--) {
+		tempMap[R][i - 1] = map[R][i];
+	}
+	for (int i = R; i > fresh1.first; i--) {
+		tempMap[i - 1][1] = map[i][1];
+	}
+	tempMap[fresh2.first][fresh2.second] = -1;
+}
+void refreshMap() {
+	// 위에꺼
+	for (int i = 1; i <= C; i++) {
+		map[fresh1.first][i] = tempMap[fresh1.first][i];
+	}
+	for (int i = fresh1.first; i >= 1; i--) {
+		map[i][C] = tempMap[i][C];
+	}
+	for (int i = C; i >= 1; i--) {
+		map[1][i] = tempMap[1][i];
+	}
+	for (int i = 1; i <= fresh1.first; i++) {
+		map[i][1] = tempMap[i][1];
+	}
+	// 아래꺼
+	for (int i = 2; i <= C; i++) {
+		map[fresh2.first][i] = tempMap[fresh2.first][i];
+	}
+	for (int i = fresh2.first; i <= R; i++) {
+		map[i][C] = tempMap[i][C];
+	}
+	for (int i = C; i >= 1; i--) {
+		map[R][i] = tempMap[R][i];
+	}
+	for (int i = R; i >= fresh1.first; i--) {
+		map[i][1] = tempMap[i][1];
+	}
+
+	for (int i = 1; i <= R; i++) {
+		for (int j = 1; j <= C; j++) {
+			tempMap[i][j] = 0;
+		}
+	}
+}
+int countMunji() {
+	int res = 0;
+	for (int i = 1; i <= R; i++) {
+		for (int j = 1; j <= C; j++) {
+			if (map[i][j] > 0) {
+				res += map[i][j];
+			}
+		}
+	}
+	return res;
+}
+void PrintMap() {
+	for (int i = 1; i <= R; i++) {
+		cout << "\n";
+		for (int j = 1; j <= C; j++) {
+			cout << map[i][j] << " ";
+		}
+	}
+}
+
+int main() {
+	cin >> R >> C >> T;
+	int temp;
+	bool F = false;
+	for (int i = 1; i <= R; i++) {
+		for (int j = 1; j <= C; j++) {
+			cin >> temp;
+			if (temp == -1 && !F) {
+				fresh1.first = i; fresh1.second = j;
+				fresh2.first = i + 1; fresh2.second = j;
+				F = true;
+			}
+			map[i][j] = temp;
+		}
+	}
+	for (int i = T; i > 0; i--) {
+		spread();
+		upTurn();
+		downTurn();
+		refreshMap();
+	}
+	cout << countMunji();
+	return 0;
+}
