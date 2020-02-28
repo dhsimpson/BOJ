@@ -1,0 +1,88 @@
+#include<iostream>
+using namespace std;
+#define MAX 101
+int map[MAX][MAX] = { 0, };
+int r, c, k;
+int M = 3; // 행 , 열 중 긴 쪽의 크기.(경곗값)
+int time = 0;
+bool RC = true; // true일땐 R연산 false일땐 C연산
+int Arr[101] = { 0, };
+
+int RawAct(int i) {
+	int ptr = 1;
+	fill(Arr, Arr + MAX, 0);
+	for (int x = 1; x < MAX; x++) {
+		if (map[i][x] == 0)continue;
+		Arr[map[i][x]]++;
+	}
+	fill(map[i], map[i] + MAX, 0);
+	for (int x = 1; x < MAX; x++) { // 1개인 것부터 조사
+		for (int j = 1; j < MAX; j++) {
+			if (Arr[j] == x) {
+				map[i][ptr++] = j;
+				map[i][ptr++] = x;
+			}
+		}
+	}
+	return ptr - 1;
+}
+int ColAct(int i) {
+	int ptr = 1;
+	fill(Arr, Arr + MAX, 0);
+	for (int y = 1; y < MAX; y++) {
+		if (map[y][i] == 0)continue;
+		Arr[map[y][i]]++;
+	}
+	for (int y = 1; y < MAX; y++) {
+		map[y][i] = 0;
+	}
+	for (int y = 1; y < MAX; y++) {
+		for (int j = 1; j < MAX; j++) {
+			if (Arr[j] == y) {
+				map[ptr++][i] = j;
+				map[ptr++][i] = y;
+			}
+		}
+	}
+	return ptr - 1;
+}
+void R() {
+	int Rmax = 0;
+	for (int i = 1; i < MAX; i++) {
+		Rmax = max(Rmax, RawAct(i));
+	}
+	if (Rmax > M) {
+		M = Rmax;
+		RC = false;
+	}
+}
+void C() {
+	int Cmax = 0;
+	for (int i = 1; i < MAX; i++) {
+		Cmax = max(Cmax,ColAct(i));
+	}
+	if (Cmax >= M) {
+		M = Cmax;
+		RC = true;
+	}
+}
+void checkArr() {
+	if (RC) R();
+	else C();
+	time++;
+}
+int main() {
+	cin >> r >> c >> k;
+	for (int i = 1; i <= 3; i++) {
+		for (int j = 1; j <= 3; j++) {
+			cin >> map[i][j];
+		}
+	}
+	while (map[r][c]!=k) {
+		checkArr();
+		if (time > 100)break;
+	}
+	if (time > 100) cout << -1;
+	else cout << time;
+	return 0;
+}
