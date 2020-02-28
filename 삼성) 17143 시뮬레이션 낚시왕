@@ -1,0 +1,115 @@
+#include<iostream>
+using namespace std;
+#define MAX 101
+struct shark {
+	bool isShark = false;
+	int s, d, z;
+	//속력,방향,크기
+	// d 1 2 3 4 순으로 상하우좌
+};
+int R, C, M;
+int cnt = 0;
+shark map[MAX][MAX];
+shark tempMap[MAX][MAX];
+
+void fishShark(int i) {
+	for (int y = 1; y <= R; y++) {
+		if (map[y][i].isShark) {
+			cnt += map[y][i].z;
+			map[y][i].isShark = false;
+			break;
+		}
+	}
+}
+void move(int i, int j) {
+	shark sh = map[i][j];
+	for (int v = 0; v < sh.s; v++) {
+		if (sh.d == 1) {
+			if (i> 1) {
+				i--;
+			}
+			else if(i == 1){
+				sh.d = 2;
+				i++;
+			}
+		}
+		else if (sh.d == 2) {
+			if (i < R) {
+				i++;
+			}
+			else if (i == R) {
+				sh.d = 1;
+				i--;
+			}
+		}
+		else if (sh.d == 3) {
+			if (j < C) {
+				j++;
+			}
+			else if (j == C) {
+				sh.d = 4;
+				j--;
+			}
+		}
+		else if(sh.d == 4) {
+			if (j > 1) {
+				j--;
+			}
+			else if (j == 1) {
+				sh.d = 3;
+				j++;
+			}
+		}
+	}
+	if (tempMap[i][j].isShark) {
+		if (sh.z > tempMap[i][j].z) {
+			tempMap[i][j] = sh;
+		}
+	}
+	else {
+		tempMap[i][j] = sh;
+	}
+
+}
+void moveShark() {
+	for (int i = 1; i <= R; i++) {
+		for (int j = 1; j <= C; j++) {
+			if (map[i][j].isShark) {
+				move(i, j);
+			}
+		}
+	}
+}
+void refresh() {
+	for (int i = 1; i <= R; i++) {
+		for (int j = 1; j <= C; j++) {
+			map[i][j].isShark = false;
+			map[i][j] = tempMap[i][j];
+			tempMap[i][j].isShark = false;
+		}
+	}
+}
+int main() {
+	cin >> R >> C >> M;
+	int r, c, s, d, z;
+	for (int i = 1; i <= R; i++) {
+		for (int j = 1; j <= C; j++) {
+			shark t;
+			t.isShark = false;
+			tempMap[i][j] = map[i][j] = t;
+		}
+	}
+	for (int i = 0; i < M; i++) {
+		cin >> r >> c >> s >> d >> z;
+		shark t;
+		t.isShark = true; t.s = s; t.d = d; t.z = z;
+		map[r][c] = t;
+	}
+	for (int i = 1; i <= C; i++) {
+		fishShark(i);
+		moveShark();
+		refresh();
+	}
+	cout << cnt;
+	return 0;
+}
