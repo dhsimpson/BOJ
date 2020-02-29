@@ -1,0 +1,149 @@
+#include<iostream>
+#include<string>
+#include<vector>
+#include<queue>
+#include<limits>
+#include<algorithm>
+using namespace std;
+#define MAX 50
+#define INF 1987654321
+int N, M;
+int map[MAX][MAX];
+int tempMap[MAX][MAX];
+int time = INF;
+int INFcount = 0;
+int tempCount;
+vector<pair<int, int>> virus;
+bool picked[10] = { false, };
+
+int xj[4] = { 0,0,-1,1 };
+int yi[4] = { -1,1,0,0 };
+
+
+void PrintMap() {
+	cout << "\n";
+	for (int i = 0; i < N; i++) {
+		cout << "\n";
+		for (int j = 0; j < N; j++) {
+			cout << map[i][j] << " ";
+		}
+	}
+}
+
+void virusTime() {
+	int m = INF;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (map[i][j] >= 0) {
+				if (m == INF) m = map[i][j];
+				else m = max(m, map[i][j]);
+			}
+			if (map[i][j] == INF) {
+				return;
+			}
+		}
+	}
+	time = min(time, m);
+}
+void spreadVirus() {
+	int x, y;
+	queue<pair<int, int>> q,qt,qtt;
+	int cn = 0;
+	for (int i = 0; i < virus.size(); i++) {
+		if (picked[i]) cn++;
+	}
+	if (cn != M) return;
+	for (int i = 0; i < virus.size(); i++) {
+		if (picked[i]) {
+			y = virus[i].first; x = virus[i].second;
+			for (int i = 0; i < 4; i++) {
+				if (0 <= y + yi[i] && y + yi[i] < N && 0 <= x + xj[i] && x + xj[i] < N) {
+					if (map[y + yi[i]][x + xj[i]] == INF) {
+						map[y + yi[i]][x + xj[i]] = 1;
+						INFcount--;
+						q.push({ y + yi[i] ,x + xj[i] });
+					}
+					else if (map[y + yi[i]][x + xj[i]] == -2) {
+						map[y + yi[i]][x + xj[i]] = 1;
+						q.push({ y + yi[i] ,x + xj[i] });
+					}
+				}
+			}
+		}
+	}
+	for (int i = 0; i < virus.size(); i++) {
+		if (picked[i]) {
+			map[virus[i].first][virus[i].second] = 0;
+		}
+	}
+	while (!q.empty()) {
+		while (!q.empty()) {
+			y = q.front().first; x = q.front().second;
+			q.pop();
+			for (int i = 0; i < 4; i++) {
+				if (0 <= y + yi[i] && y + yi[i] < N && 0 <= x + xj[i] && x + xj[i] < N) {
+					if (map[y + yi[i]][x + xj[i]] != -1) {
+						if (map[y + yi[i]][x + xj[i]] == -2 || map[y + yi[i]][x + xj[i]] > map[y][x] + 1) {
+							if (map[y + yi[i]][x + xj[i]] == INF) INFcount--;
+							if (map[y + yi[i]][x + xj[i]] == -2 && INFcount == 0) return;
+							map[y + yi[i]][x + xj[i]] = map[y][x] + 1;
+							if (INFcount == 0)return;
+							qt.push({ y + yi[i] ,x + xj[i] });
+						}
+					}
+				}
+			}
+		}
+		//PrintMap();
+		q = qt; qt = qtt;
+	}
+}
+void refresh() {
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			map[i][j] = tempMap[i][j];
+		}
+	}
+	INFcount = tempCount;
+}
+void pickVirus(int i,int depth) {
+	for (int j = i; j < virus.size(); j++) {
+		picked[j] = true;
+		if (depth == M) {
+			spreadVirus();
+			virusTime();
+			refresh();
+		}
+		else pickVirus(j + 1, depth + 1);
+		picked[j] = false;
+	}
+
+}
+int main() {
+	cin >> N >> M;
+	int temp;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			cin >> temp;
+			if (temp == 2) {
+				virus.push_back({ i,j });
+				temp = -2;
+			}
+			if (temp == 1) temp = -1;
+			if (temp == 0) {
+				temp = INF;
+				INFcount++;
+			}
+			tempMap[i][j] = map[i][j] = temp;
+		}
+	}
+	tempCount = INFcount;
+	if (INFcount == 0) {
+		cout << "0";
+		return 0;
+	}
+	for (int i = 0; i < virus.size(); i++)pickVirus(i,1);
+	if (time == INF)cout << -1;
+	else cout << time;
+	return 0;
+}
