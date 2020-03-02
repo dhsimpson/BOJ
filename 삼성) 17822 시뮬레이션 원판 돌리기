@@ -1,0 +1,102 @@
+#include<iostream>
+using namespace std;
+#define MAX 51
+int N, M, T, x, d, k;
+int onePan[MAX][MAX] = { 0, };
+int tempPan[MAX][MAX] = { 0, };
+void clock(int x) { // 시계방향
+	int temp = onePan[x][M];
+	for (int i = M; i > 1; i--) {
+		onePan[x][i] = onePan[x][i - 1];
+	}
+	onePan[x][1] = temp;
+}
+void reclock(int x) { // 반시계방향
+	int temp = onePan[x][1];
+	for (int i = 1; i < M; i++) {
+		onePan[x][i] = onePan[x][i + 1];
+	}
+	onePan[x][M] = temp;
+}
+void rotate(int x, int d, int k) {
+	if (d == 0) {
+		for (int i = 0; i < k; i++)clock(x);
+	}
+	else {
+		for (int i = 0; i < k; i++)reclock(x);
+	}
+}
+void refresh() {
+	bool toggle = false;
+	// 인접 숫자 지우기 끝
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j < M; j++) {
+			if (onePan[i][j] == onePan[i][j + 1] && onePan[i][j + 1] != 0) {
+				toggle = true;
+				tempPan[i][j] = tempPan[i][j + 1] = -1;
+			}
+		}
+		if (onePan[i][1] == onePan[i][M] && onePan[i][M]!=0) { tempPan[i][1] = tempPan[i][M] = -1; }
+	}
+	for (int j = 1; j <= M; j++) {
+		for (int i = 1; i < N; i++) {
+			if (onePan[i][j] == onePan[i + 1][j] && onePan[i + 1][j] != 0) {
+				toggle = true;
+				tempPan[i][j] = tempPan[i + 1][j] = -1;
+			}
+		}
+	}
+	int sum = 0;
+	int cnt = 0;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= M; j++) {
+			if (tempPan[i][j] == -1)onePan[i][j] = 0;
+			tempPan[i][j] = 0;
+		}
+	}
+	if (!toggle) {
+		for (int i = 1; i <= N; i++) {
+			for (int j = 1; j <= M; j++) {
+				if (onePan[i][j] != 0) {
+					cnt++;
+					sum += onePan[i][j];
+				}
+			}
+		}
+		for (int i = 1; i <= N; i++) {
+			for (int j = 1; j <= M; j++) {
+				if (onePan[i][j] != 0) {
+					if (onePan[i][j]*cnt > sum) { onePan[i][j]--; }
+					else if (onePan[i][j]*cnt < sum) { onePan[i][j]++; }
+				}
+			}
+		}
+
+	}
+}
+int result() {
+	int res = 0;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= M; j++) {
+			res += onePan[i][j];
+		}
+	}
+	return res;
+}
+int main() {
+	cin >> N >> M >> T;
+	for (int i = 1; i <= N; i++) {
+		for (int j = 1; j <= M; j++) {
+			cin >> onePan[i][j];
+		}
+	}
+	for (int i = 0; i < T; i++) {
+		cin >> x >> d >> k; // x의 배수인 원판, d 방향, k칸
+		for (int j = 1; j <= N; j++) {
+			if (j % x == 0)rotate(j, d, k);
+		}
+		refresh(); // 인접한 숫자들에 대한 처리를 함
+	}
+	cout << result();
+	return 0;
+}
