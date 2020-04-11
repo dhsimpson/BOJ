@@ -1,0 +1,61 @@
+#include<iostream>
+#include<vector>
+#define MAX 50
+using namespace std;
+int tree[MAX][MAX];
+int N;
+int parent;
+int del;
+int cnt = 0;
+vector<int> root;
+void Delete(int from) {
+	for (int i = 0; i < N; i++) {
+		tree[i][from] = 0;
+		if (tree[from][i] == 1) {
+			tree[from][i] = 0;
+			Delete(i);
+		}
+	}
+}
+void Search(int from) {
+	bool check = false;
+	for (int i = 0; i < N; i++) {
+		if (tree[from][i] == 1) {
+			check = true;
+			Search(i);
+		}
+	}
+	if (!check) {
+		cnt++;
+	}
+}
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%d", &parent);
+		if (parent == -1) {
+			root.push_back(i);
+		}
+		else {
+			tree[parent][i] = 1;
+		}
+	}
+	scanf("%d", &del);
+	Delete(del);
+	for (int r = 0; r < root.size(); r++) {
+		bool check = false;
+		if (root[r] == del) cnt--;
+		for (int i = 0; i < N; i++) {
+			if (tree[root[r]][i] == 1) { check = true; break; }
+		}
+		if (check) {
+			Search(root[r]);
+		}
+		else {
+			cnt++;
+		}
+	}
+	printf("%d", cnt);
+	
+	return 0;
+}
