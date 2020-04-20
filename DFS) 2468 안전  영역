@@ -1,3 +1,53 @@
+//DFS
+#include<iostream>
+#define MAX 100
+int N;
+int high;
+int cnt,mx;
+int map[MAX][MAX];
+bool check[MAX][MAX];
+int xj[] = { 0,0,-1,1 }, yi[] = { -1,1,0,0 };
+int yy, xx;
+void dfs(int y,int x,int h) {
+	for (int i = 0; i < 4; i++) {
+		yy = y + yi[i]; xx = x + xj[i];
+		if (0<=yy&&yy<N&&0<=xx&&xx<N&&!check[yy][xx] && map[yy][xx] > h) {
+			check[yy][xx] = true;
+			dfs(yy, xx, h);
+		}
+	}
+}
+int main() {
+	scanf("%d", &N);
+	mx = 1;
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			scanf("%d", &map[i][j]);
+			if (high == 0)high = map[i][j];
+			else if (high < map[i][j])high = map[i][j];
+		}
+	}
+	for (int h = 1; h <= high; h++) {
+		cnt = 0;
+		for (int y = 0; y < N; y++)for (int x = 0; x < N; x++)check[y][x] = false;
+		for (int y = 0; y < N; y++) {
+			for (int x = 0; x < N; x++) {
+				if (!check[y][x]&&map[y][x]>h) {
+					cnt++;
+					check[y][x] = true;
+					dfs(y, x, h);
+				}
+			}
+		}
+		if (mx < cnt) { mx = cnt; }
+	}
+	printf("%d", mx);
+	return 0;
+}
+
+//BFS
 #include<iostream>
 #include<queue>
 #define MAX 101
