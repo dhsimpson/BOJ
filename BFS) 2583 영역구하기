@@ -1,0 +1,50 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<algorithm>
+#define MAX 101
+using namespace std;
+bool map[MAX][MAX];
+int N, M, K, x_1, y_1, x_2, y_2;
+int sz;
+int xx[] = { 0,0,-1,1 }, yy[] = { -1,1,0,0 };
+vector<int> v;
+bool compare(const int& a, const int& b) { return a < b; }
+int main() {
+	scanf("%d%d%d", &M, &N, &K); // M은 세로 N은 가로 길이
+	for (int i = 1; i <= K; i++) {
+		scanf("%d%d%d%d", &x_1, &y_1, &x_2, &y_2);
+		for (int yy = y_1; yy < y_2; yy++) {
+			for (int xx = x_1; xx < x_2; xx++) {
+				map[yy][xx] = true;
+			}
+		}
+	}
+	for (int i = 0; i < M; i++) {
+		for (int j = 0; j < N; j++) {
+			if (!map[i][j]) {
+				sz = 1;
+				map[i][j] = true;
+				queue<pair<int, int>>  q;
+				q.push({ i,j });
+				while (!q.empty()) {
+					int yn = q.front().first, xn = q.front().second;
+					q.pop();
+					for (int idx = 0; idx < 4; idx++) {
+						int yt = yn + yy[idx], xt = xn + xx[idx];
+						if (0<=yt && yt<M && 0<= xt && xt<N &&!map[yt][xt]) {
+							sz++;
+							map[yt][xt] = true;
+							q.push({ yt ,xt });
+						}
+					}
+				}
+				v.push_back(sz);
+			}
+		}
+	}
+	sort(v.begin(), v.end(), compare);
+	printf("%d\n", v.size());
+	for (int i = 0; i < v.size(); i++)printf("%d ", v[i]);
+	return 0;
+}
