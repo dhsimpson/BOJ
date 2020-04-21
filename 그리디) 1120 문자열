@@ -1,0 +1,35 @@
+#include<iostream>
+#define MAX 51
+using namespace std;
+char A[MAX], B[MAX];
+int AF,BF,cnt;
+int mx = MAX;
+int main() {
+	scanf("%s %s", A,B);
+	int i = 0;
+	while (true) {
+		if (A[i] == 0) {
+			AF = i;
+			break;
+		}
+		i++;
+	}
+	i = 0;
+	while (true) {
+		if (B[i] == 0) {
+			BF = i;
+			break;
+		}
+		i++;
+	}
+
+	for (int idx = 0; idx < BF - (AF - 1); idx++) {
+		cnt = 0;
+		for (int j = 0; j < AF; j++) {
+			if (A[j] != B[idx+j])cnt++;
+		}
+		if (cnt < mx)mx = cnt;
+	}
+	printf("%d", mx);
+	return 0;
+}
