@@ -1,0 +1,68 @@
+#include<iostream>
+#define MAX 101
+char map[MAX][MAX];
+bool check[MAX][MAX];
+int N;
+int cnt;
+int xj[] = { 0,0,-1,1 }, yi[] = { -1,1,0,0 };
+int yt, xt;
+void dfs(int i, int j,char clr) {
+	for (int idx = 0; idx < 4; idx++) {
+		yt = i + yi[idx]; xt = j + xj[idx];
+		if (0 <= yt && yt < N && 0 <= xt && xt < N && map[yt][xt] == clr && !check[yt][xt]) {
+			check[yt][xt] = true;
+			dfs(yt, xt, clr);
+		}
+	}
+}
+void RBBR(int i,int j) {
+	for (int idx = 0; idx < 4; idx++) {
+		yt = i + yi[idx]; xt = j + xj[idx];
+		if (0 <= yt && yt < N && 0 <= xt && xt < N && map[yt][xt] == 'G') {
+			map[yt][xt] = 'R';
+			RBBR(yt, xt);
+		}
+	}
+}
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++) {
+		scanf("%s", map[i]);
+	}
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (!check[i][j]) {
+				cnt++;
+				check[i][j] = true;
+				dfs(i, j, map[i][j]);
+			}
+		}
+	}
+	printf("%d ", cnt);
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			check[i][j] = false;
+			if (map[i][j] == 'R') {
+				for (int idx = 0; idx < 4; idx++) {
+					yt = i + yi[idx]; xt = j + xj[idx];
+					if (0 <= yt && yt < N && 0 <= xt && xt < N && map[yt][xt] == 'G') {
+						map[yt][xt] = 'R';
+						RBBR(yt, xt);
+					}
+				}
+			}
+		}
+	}
+	cnt = 0;
+	for (int i = 0; i < N; i++) {
+		for (int j = 0; j < N; j++) {
+			if (!check[i][j]) {
+				cnt++;
+				check[i][j] = true;
+				dfs(i, j, map[i][j]);
+			}
+		}
+	}
+	printf("%d", cnt);
+	return 0;
+}
